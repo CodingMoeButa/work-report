@@ -14,4 +14,6 @@ This project uses the Bootstrap 5 responsive web front-end development framework
 npm install -g json-server
 ```
 
-3.双击`start_json-server.bat`文件运行json-server服务器。
+3.双击`start_json-server.bat`文件运行json-server服务器；
+
+4.从浏览器访问`index.html`。
