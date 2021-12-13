@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html><!--用户登录后跳转到这个页面-->
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>用户信息 - 在线工作汇报系统</title>
+		<link rel="stylesheet" href="./css/bootstrap.min.css" />
+		<script src="js/bootstrap.bundle.min.js"></script>
+	</head>
+	<body>
+		<header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+		  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="profile.html">在线工作汇报系统</a><!--此处a标签href属性需要改为当前页面的地址-->
+		  
+		  <div class="navbar-nav">
+		    <div class="nav-item text-nowrap">
+		      <a class="nav-link px-3" href="index.html">登出</a><!--此处a标签href属性需要改为处理用户登出功能的页面地址-->
+		    </div>
+		  </div>
+		</header>
+		
+		<div class="container-fluid">
+		  <div class="row">
+		    <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+		      <div class="position-sticky pt-3">
+		        <ul class="nav flex-column">
+				  <li class="nav-item">
+					<a class="nav-link" href="profile.html"><!--此处a标签href属性需要改为对应页面的地址-->
+					  用户信息
+					</a>
+				  </li>
+				  <li class="nav-item">
+					  <a class="nav-link" href="work_editor.html">提交汇报</a><!--此处a标签href属性需要改为对应页面的地址-->
+				  </li>
+				  <li class="nav-item">
+					<a class="nav-link" href="work_mine.html">查看汇报</a><!--此处a标签href属性需要改为对应页面的地址-->
+				  </li>
+				  <!--以下内容只有管理员能看到-->
+				  <hr />
+				  <li class="nav-item">
+				  	<a class="nav-link" href="user_all.html">用户管理</a><!--此处a标签href属性需要改为对应页面的地址-->
+				  </li>
+				  <li class="nav-item">
+				  	<a class="nav-link" href="work_all.html">汇报管理</a><!--此处a标签href属性需要改为对应页面的地址-->
+				  </li>
+				  <!--以上内容只有管理员能看到-->
+		        </ul>
+		
+		        
+		      </div>
+		    </nav>
+		
+		    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+				<h1>用户信息</h1>
+				<h2><span id="username_lable">&lt;这里显示用户名&gt;</span><span class="badge bg-secondary" id="group_lable">&lt;这里显示用户等级，“员工”或“管理”&gt;</span></h2>
+				<script>
+				document.getElementById("username_lable").innerText = window.sessionStorage.getItem("username");
+				if(window.sessionStorage.getItem("group") == "0"){
+					document.getElementById("group_lable").innerText = "员工";
+				}else{
+					document.getElementById("group_lable").innerText = "管理";
+				}
+				</script>
+				<div class="card">
+					<div class="card-header">修改密码</div>
+					<div class="card-body">
+						<div id="password_info"></div>
+						<form method="post" id="password_change_form"><!--这里需要添加action属性，但如果表单提交到当前页面，则不需要action属性-->
+							<div class="form-floating"><!--表单的旧密码字段为old_password-->
+								<input class="form-control" type="password" id="old_password" name="old_password" />
+								<label for="old_password">旧密码</label>
+							</div>
+							<div class="form-floating"><!--表单的新密码字段为new_password-->
+								<input class="form-control" type="password" id="new_password" name="new_password" />
+								<label for="new_password">新密码</label>
+							</div>
+							<div class="form-floating">
+								<input class="btn btn-primary" type="submit" value="确认修改" />
+							</div>
+						</form>
+					</div>
+				</div>
+				<script>
+				var hostname = "http://localhost:3000/";
+				
+				var old_password = document.getElementById("old_password");
+				var new_password = document.getElementById("new_password");
+				
+				document.getElementById("password_change_form").addEventListener("submit", function(event){
+					event.preventDefault();
+					if(old_password.value != window.sessionStorage.getItem("password")){
+						document.getElementById("password_info").innerHTML =
+						"<div class=\"alert alert-danger alert-dismissible fade show\">" +
+						"<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\"></button>" +
+						"<strong>旧密码输入错误：</strong>请检查输入是否正确。</div>";
+					}else{
+						json_obj = {
+							"password": new_password.value
+						};
+						var xmlhtml = new XMLHttpRequest();
+						xmlhtml.open("PATCH", hostname + "users/" + window.sessionStorage.getItem("uid"));
+						xmlhtml.setRequestHeader("Content-Type", "application/json");
+						xmlhtml.send(JSON.stringify(json_obj));
+						document.getElementById("password_info").innerHTML =
+						"<div class=\"alert alert-success alert-dismissible fade show\">" +
+						"<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\"></button>" +
+						"<strong>密码修改成功！</strong></div>";
+						window.sessionStorage.setItem("password", new_password.value);
+					}
+				});
+				</script>
+		    </main>
+		  </div>
+		</div>
+	</body>
+</html>

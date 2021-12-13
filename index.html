@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>在线工作汇报系统</title>
+		<link rel="stylesheet" href="./css/bootstrap.min.css" />
+		<script src="js/bootstrap.bundle.min.js"></script>
+		<style>
+		body{
+			background-image: url(./img/story_bg_pc.jpg);
+			background-size: cover;
+		}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<h1>在线工作汇报系统</h1>
+			<div id="login_info"></div>
+			<h2>用户登录</h2>
+			<form id="login_form" method="post"><!--这里需要添加action属性，但如果表单提交到当前页面，则不需要action属性-->
+				<div class="form-floating"><!--表单的用户名字段为username-->
+					<input class="form-control" type="text" id="username" name="username" />
+					<label for="username">用户名</label>
+				</div>
+				<div class="form-floating"><!--表单的密码字段为password-->
+					<input class="form-control" type="password" id="password" name="password" />
+					<label for="password">密码</label>
+				</div>
+				<div class="form-floating">
+					<input class="btn btn-primary" type="submit" value="登录" />
+				</div>
+			</form>
+		</div>
+		<script>
+		var hostname = "http://localhost:3000/";
+		
+		var username = document.getElementById('username');
+		var password = document.getElementById('password');
+		
+		document.getElementById("login_form").addEventListener("submit", function(event){
+			event.preventDefault();
+			var xmlhttp = new XMLHttpRequest();
+			xmlhttp.open("GET", hostname + "users?username=" + username.value + "&password=" + password.value, false);
+			xmlhttp.send();
+			//console.log(hostname + "users?username=" + username.value + "&password=" + password.value);
+			//alert(xmlhttp.responseText);
+			var result = JSON.parse(xmlhttp.responseText);
+			if(result.length == 0){
+				document.getElementById("login_info").innerHTML =
+				"<div class=\"alert alert-danger alert-dismissible fade show\">" +
+				"<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\"></button>" +
+				"<strong>用户名或密码错误：</strong>请检查输入是否正确。</div>";
+			}else{
+				window.sessionStorage.setItem("uid", result[0].id.toString());
+				window.sessionStorage.setItem("username", result[0].username);
+				window.sessionStorage.setItem("password", result[0].password);
+				window.sessionStorage.setItem("group", result[0].group.toString());
+				// document.cookie = "username=" + result[0].username + "; path=/";
+				// document.cookie = "password=" + result[0].password + "; path=/";
+				// document.cookie = "group=" + result[0].group.toString() + "; path=/";
+				window.location.replace("profile.html");
+			}
+		});
+		</script>
+	</body>
+</html>

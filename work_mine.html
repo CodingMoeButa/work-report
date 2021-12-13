@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>查看汇报 - 在线工作汇报系统</title>
+		<link rel="stylesheet" href="./css/bootstrap.min.css" />
+		<script src="js/bootstrap.bundle.min.js"></script>
+		<style>
+			td{
+				vertical-align: middle;
+			}
+		</style>
+	</head>
+	<body>
+		<header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+		  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="profile.html">在线工作汇报系统</a><!--此处a标签href属性需要改为当前页面的地址-->
+		  
+		  <div class="navbar-nav">
+		    <div class="nav-item text-nowrap">
+		      <a class="nav-link px-3" href="index.html">登出</a><!--此处a标签href属性需要改为处理用户登出功能的页面地址-->
+		    </div>
+		  </div>
+		</header>
+		
+		<div class="container-fluid">
+		  <div class="row">
+		    <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+		      <div class="position-sticky pt-3">
+		        <ul class="nav flex-column">
+				  <li class="nav-item">
+					<a class="nav-link" href="profile.html"><!--此处a标签href属性需要改为对应页面的地址-->
+					  用户信息
+					</a>
+				  </li>
+				  <li class="nav-item">
+					  <a class="nav-link" href="work_editor.html">提交汇报</a><!--此处a标签href属性需要改为对应页面的地址-->
+				  </li>
+				  <li class="nav-item">
+					<a class="nav-link" href="work_mine.html">查看汇报</a><!--此处a标签href属性需要改为对应页面的地址-->
+				  </li>
+				  <!--以下内容只有管理员能看到-->
+				  <hr />
+				  <li class="nav-item">
+				  	<a class="nav-link" href="user_all.html">用户管理</a><!--此处a标签href属性需要改为对应页面的地址-->
+				  </li>
+				  <li class="nav-item">
+				  	<a class="nav-link" href="work_all.html">汇报管理</a><!--此处a标签href属性需要改为对应页面的地址-->
+				  </li>
+				  <!--以上内容只有管理员能看到-->
+		        </ul>
+		
+		        
+		      </div>
+		    </nav>
+			
+			
+			
+		    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4" id="main">
+				<h1>我的汇报记录</h1>
+				<div class="table-responsive">
+				<table class="table table-bordered table-striped table-hover">
+				    <thead>
+				      <tr>
+				        <th>#</th><!--wid-->
+				        <th>标题</th><!--title-->
+				        <th>时间</th><!--time-->
+				        <th>状态</th><!--content-->
+						<th>操作</th>
+				      </tr>
+				    </thead>
+				    <tbody id="tbody">
+				      <tr>
+				        <td>1</td>
+				        <td>示例标题1</td>
+				        <td>2021-11-15-21:04:37</td>
+				        <td>待审核</td>
+						<td><button class="btn btn-success btn-sm" onclick="window.open('article.html')">查看</button></td>
+				      </tr>
+					  <tr>
+					    <td>2</td>
+					    <td>示例标题2</td>
+					    <td>2021-11-15-21:05:55</td>
+					    <td>已驳回</td>
+						<td><button class="btn btn-success btn-sm" onclick="window.open('article.html')">查看</button></td>
+					  </tr>
+					  <tr>
+					    <td>3</td>
+					    <td>示例标题3</td>
+					    <td>2021-11-15-21:06:57</td>
+					    <td>已核准</td>
+						<td><button class="btn btn-success btn-sm" onclick="window.open('article.html')">查看</button></td>
+					  </tr>
+				    </tbody>
+				</table>
+				</div>
+				<!-- 模态框 -->
+				<div class="modal fade" id="modal">
+				  <div class="modal-dialog">
+				    <div class="modal-content">
+				
+				      <!-- 模态框头部 -->
+				      <div class="modal-header">
+				        <h4 class="modal-title" id="modal-title">模态框标题</h4>
+				        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+				      </div>
+				
+				      <!-- 模态框内容 -->
+				      <div class="modal-body" id="modal-body">
+				        模态框内容..
+				      </div>
+				
+				      <!-- 模态框底部 -->
+				      <div class="modal-footer">
+				        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">关闭</button>
+				      </div>
+				
+				    </div>
+				  </div>
+				</div>
+				<script>
+				function toStatusText(statusCode){
+					switch(statusCode){
+						case 0:
+							return "待审核";
+							break;
+						case -1:
+							return "已驳回";
+							break;
+						case 1:
+							return "已核准";
+							break;
+					}
+				}
+				function openModal(i){
+					document.getElementById("modal-title").innerText = result[i].title;
+					document.getElementById("modal-body").innerText = result[i].content;
+				}
+				
+				var hostname = "http://localhost:3000/";
+				var xmlhtml = new XMLHttpRequest();
+				xmlhtml.open("GET", hostname + "works?uid=" + window.sessionStorage.getItem("uid"), false);
+				xmlhtml.send();
+				var result = JSON.parse(xmlhtml.responseText);
+				var tbody_html = "";
+				for(var i = 0; i < result.length; i++){
+					tbody_html = tbody_html + "<tr id=\"row" + String(i) + "\">"
+					+ "<td id=\"id" + String(i) + "\">" + String(result[i].id) + "</td>"
+					+ "<td id=\"title" + String(i) + "\">" + result[i].title + "</td>"
+					+ "<td id=\"time" + String(i) + "\">" + result[i].time + "</td>"
+					+ "<td id=\"status" + String(i) + "\">" + toStatusText(result[i].status) + "</td>"
+					+ "<td><button class=\"btn btn-success btn-sm\" onclick=\"openModal(" + i.toString() + ")\" "
+					+ "data-bs-toggle=\"modal\" data-bs-target=\"#modal\">查看</button></td>"
+					+ "</tr>";
+				}
+				document.getElementById("tbody").innerHTML = tbody_html;
+				</script>
+		    </main>
+		  </div>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,42 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "郭庆",
+      "password": "guoqin",
+      "group": 1
+    },
+    {
+      "username": "刘志豪",
+      "password": "liuzhihao",
+      "group": "0",
+      "id": 2
+    }
+  ],
+  "works": [
+    {
+      "id": 1,
+      "title": "示例标题1",
+      "uid": 2,
+      "time": "2021-11-15-21:04:37",
+      "status": 0,
+      "content": "示例标题1的内容"
+    },
+    {
+      "id": 2,
+      "title": "示例标题2",
+      "uid": 2,
+      "time": "2021-11-15-21:05:55",
+      "status": -1,
+      "content": "示例标题2的内容"
+    },
+    {
+      "id": 3,
+      "title": "示例标题3",
+      "uid": 1,
+      "time": "2021-11-15-21:06:57",
+      "status": 1,
+      "content": "示例标题3的内容"
+    }
+  ]
+}

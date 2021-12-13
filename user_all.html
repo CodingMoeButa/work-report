@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>用户管理 - 在线工作汇报系统</title>
+		<link rel="stylesheet" href="./css/bootstrap.min.css" />
+		<script src="js/bootstrap.bundle.min.js"></script>
+		<style>
+			td{
+				vertical-align: middle;
+			}
+		</style>
+	</head>
+	<body>
+		<header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+		  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="profile.html">在线工作汇报系统</a><!--此处a标签href属性需要改为当前页面的地址-->
+		  
+		  <div class="navbar-nav">
+		    <div class="nav-item text-nowrap">
+		      <a class="nav-link px-3" href="index.html">登出</a><!--此处a标签href属性需要改为处理用户登出功能的页面地址-->
+		    </div>
+		  </div>
+		</header>
+		
+		<div class="container-fluid">
+		  <div class="row">
+		    <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+		      <div class="position-sticky pt-3">
+		        <ul class="nav flex-column">
+				  <li class="nav-item">
+					<a class="nav-link" href="profile.html"><!--此处a标签href属性需要改为对应页面的地址-->
+					  用户信息
+					</a>
+				  </li>
+				  <li class="nav-item">
+					  <a class="nav-link" href="work_editor.html">提交汇报</a><!--此处a标签href属性需要改为对应页面的地址-->
+				  </li>
+				  <li class="nav-item">
+					<a class="nav-link" href="work_mine.html">查看汇报</a><!--此处a标签href属性需要改为对应页面的地址-->
+				  </li>
+				  <!--以下内容只有管理员能看到-->
+				  <hr />
+				  <li class="nav-item">
+				  	<a class="nav-link" href="user_all.html">用户管理</a><!--此处a标签href属性需要改为对应页面的地址-->
+				  </li>
+				  <li class="nav-item">
+				  	<a class="nav-link" href="work_all.html">汇报管理</a><!--此处a标签href属性需要改为对应页面的地址-->
+				  </li>
+				  <!--以上内容只有管理员能看到-->
+		        </ul>
+		
+		        
+		      </div>
+		    </nav>
+			
+			
+			
+		    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4" id="main">
+				<h1>用户管理</h1>
+				<div class="card">
+					<div class="card-header">添加或修改</div>
+					<div class="card-body">
+						<form method="post" id="user_form"><!--这里需要添加action属性，但如果表单提交到当前页面，则不需要action属性-->
+							<div class="form-floating"><!--表单的用户名字段为username-->
+								<input class="form-control" type="text" id="username" name="username" />
+								<label for="username">用户名</label>
+							</div>
+							<div class="form-floating"><!--表单的密码字段为password-->
+								<input class="form-control" type="password" id="password" name="password" />
+								<label for="password">密码</label>
+							</div>
+							<div class="form-floating"><!--表单的用户权限字段为group，0代表员工，1代表管理-->
+								<select class="form-select" id="group" name="group">
+									<option value="0" selected="">员工</option>
+									<option value="1">管理</option>
+								</select>
+								<label for="group">用户组</label>
+							</div>
+							<div class="form-floating">
+								<input class="btn btn-primary" type="submit" value="提交" />
+							</div>
+						</form>
+					</div>
+				</div>
+				<script>
+				var username = document.getElementById("username");
+				var password = document.getElementById("password");
+				var group = document.getElementById("group");
+				
+				function editUser(n){
+					var usernameN = document.getElementById("username" + String(n));
+					var groupN = document.getElementById("group" + String(n));
+					
+					username.value = usernameN.innerHTML;
+					if(groupN.innerHTML == "员工"){
+						group.value = 0;
+					}else if(groupN.innerHTML == "管理"){
+						group.value = 1;
+					}
+				}
+				
+				document.getElementById("user_form").addEventListener("submit", function(event){
+					event.preventDefault();
+					var xmlhtml = new XMLHttpRequest();
+					xmlhtml.open("GET", hostname + "users?username=" + username.value, false);
+					xmlhtml.send();
+					var user_result = JSON.parse(xmlhtml.responseText);
+					if(user_result.length == 0){
+						json_obj = {
+							"username": username.value,
+							"password": password.value,
+							"group": group.value
+						};
+						var xmlhtml = new XMLHttpRequest();
+						xmlhtml.open("POST", hostname + "users", false);
+						xmlhtml.setRequestHeader("Content-Type", "application/json");
+						xmlhtml.send(JSON.stringify(json_obj));
+						location.reload();
+					}else{
+						uid = user_result[0].id;
+						if(password.value == ""){
+							json_obj = {
+								"username": username.value,
+								"group": group.value
+							};
+							var xmlhtml = new XMLHttpRequest();
+							xmlhtml.open("PATCH", hostname + "users/" + String(uid), false);
+							xmlhtml.setRequestHeader("Content-Type", "application/json");
+							xmlhtml.send(JSON.stringify(json_obj));
+							location.reload();
+						}else{
+							json_obj = {
+								"username": username.value,
+								"password": password.value,
+								"group": group.value
+							};
+							var xmlhtml = new XMLHttpRequest();
+							xmlhtml.open("PUT", hostname + "users/" + String(uid), false);
+							xmlhtml.setRequestHeader("Content-Type", "application/json");
+							xmlhtml.send(JSON.stringify(json_obj));
+							location.reload();
+						}
+						
+						
+					}
+				});
+				</script>
+				<div class="table-responsive">
+				<table class="table table-bordered table-striped table-hover">
+				    <thead>
+				      <tr>
+				        <th>用户名</th><!--username-->
+				        <th>用户组</th><!--group-->
+						<th>操作</th>
+				      </tr>
+				    </thead>
+				    <tbody id="tbody">
+				      <tr>
+				        <td id="username1">郭庆</td>
+				        <td id="group1">管理</td>
+						<td>
+							<button class="btn btn-warning btn-sm" onclick="editUser(1)">修改</button>
+							<button class="btn btn-danger btn-sm">删除</button>
+						</td>
+				      </tr>
+					  <tr>
+					    <td id="username2">刘志豪</td>
+					    <td id="group2">员工</td>
+						<td>
+							<button class="btn btn-warning btn-sm" onclick="editUser(2)">修改</button>
+							<button class="btn btn-danger btn-sm">删除</button>
+						</td>
+					  </tr>
+				    </tbody>
+				</table>
+				</div>
+		    </main>
+			<script>
+			function toGroupText(n){
+				if(n == 0){
+					return "员工";
+				}else if(n == 1){
+					return "管理";
+				}
+			}
+			function deleteUser(n){
+				var xmlhttp = new XMLHttpRequest();
+				xmlhttp.open("DELETE", hostname + "users/" + String(result[n].id));
+				xmlhttp.send();
+				document.getElementById("row" + String(n)).remove();
+			}
+			
+			if(window.sessionStorage.getItem("group") != 1){
+				document.getElementById("main").innerHTML =
+				"<div class=\"alert alert-danger alert-dismissible fade show\">" +
+				"<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\"></button>" +
+				"<strong>权限不足：</strong>请使用管理账号登录。</div>";
+			}
+			
+			var hostname = "http://localhost:3000/";
+			var xmlhtml = new XMLHttpRequest();
+			xmlhtml.open("GET", hostname + "users", false);
+			xmlhtml.send();
+			var result = JSON.parse(xmlhtml.responseText);
+			var tbody_html = "";
+			for(var i = 0; i < result.length; i++){
+				tbody_html = tbody_html + "<tr id=\"row" + String(i) + "\">"
+				+ "<td id=\"username" + String(i) + "\">" + result[i].username + "</td>"
+				+ "<td id=\"group" + String(i) + "\">" + toGroupText(result[i].group) + "</td>"
+				+ "<td><button class=\"btn btn-warning btn-sm\" onclick=\"editUser(" + String(i) + ")\">修改</button> "
+				+ "<button class=\"btn btn-danger btn-sm\" onclick=\"deleteUser(" + String(i) + ")\">删除</button></td>"
+				+ "</tr>";
+			}
+			document.getElementById("tbody").innerHTML = tbody_html;
+			</script>
+		  </div>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>提交汇报 - 在线工作汇报系统</title>
+		<link rel="stylesheet" href="./css/bootstrap.min.css" />
+		<script src="js/bootstrap.bundle.min.js"></script>
+	</head>
+	<body>
+		<header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+		  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="profile.html">在线工作汇报系统</a><!--此处a标签href属性需要改为当前页面的地址-->
+		  
+		  <div class="navbar-nav">
+		    <div class="nav-item text-nowrap">
+		      <a class="nav-link px-3" href="index.html">登出</a><!--此处a标签href属性需要改为处理用户登出功能的页面地址-->
+		    </div>
+		  </div>
+		</header>
+		
+		<div class="container-fluid">
+		  <div class="row">
+		    <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+		      <div class="position-sticky pt-3">
+		        <ul class="nav flex-column">
+				  <li class="nav-item">
+					<a class="nav-link" href="profile.html"><!--此处a标签href属性需要改为对应页面的地址-->
+					  用户信息
+					</a>
+				  </li>
+				  <li class="nav-item">
+					  <a class="nav-link" href="work_editor.html">提交汇报</a><!--此处a标签href属性需要改为对应页面的地址-->
+				  </li>
+				  <li class="nav-item">
+					<a class="nav-link" href="work_mine.html">查看汇报</a><!--此处a标签href属性需要改为对应页面的地址-->
+				  </li>
+				  <!--以下内容只有管理员能看到-->
+				  <hr />
+				  <li class="nav-item">
+				  	<a class="nav-link" href="user_all.html">用户管理</a><!--此处a标签href属性需要改为对应页面的地址-->
+				  </li>
+				  <li class="nav-item">
+				  	<a class="nav-link" href="work_all.html">汇报管理</a><!--此处a标签href属性需要改为对应页面的地址-->
+				  </li>
+				  <!--以上内容只有管理员能看到-->
+		        </ul>
+		
+		        
+		      </div>
+		    </nav>
+		
+		    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+				<h1>提交工作汇报</h1>
+				<form method="post" id="editor"><!--这里需要添加action属性，但如果表单提交到当前页面，则不需要action属性-->
+					<div class="form-floating">
+						<input class="form-control" type="text" id="title" name="title" />
+						<label for="title">汇报标题</label>
+					</div>
+					<div class="form-floating"><!--表单的内容字段为content-->
+						<textarea class="form-control" id="content" name="content" style="height: 40em;"></textarea>
+						<label for="content">汇报内容</label>
+					</div>
+					<div class="form-floating">
+						<input class="btn btn-primary" type="submit" value="提交" />
+					</div>
+				</form>
+				<script>
+				var hostname = "http://localhost:3000/";
+				
+				var title = document.getElementById("title");
+				var content = document.getElementById("content");
+				
+				document.getElementById("editor").addEventListener("submit", function(event){
+					event.preventDefault();
+					var xmlhtml = new XMLHttpRequest();
+					var dt = new Date();
+					var time = dt.getFullYear().toString() + "-" + String(dt.getMonth()+1) + "-" + dt.getDate().toString() + "-" +
+					dt.getHours().toString() + ":" + dt.getMinutes().toString() + ":" + dt.getSeconds().toString();
+					json_obj = {
+						"title": title.value,
+						"uid": Number(window.sessionStorage.getItem("uid")),
+						"time": time,
+						"status": 0,
+						"content": content.value
+					};
+					xmlhtml.open("POST", hostname + "works", false);
+					xmlhtml.setRequestHeader("Content-Type", "application/json");
+					xmlhtml.send(JSON.stringify(json_obj));
+					window.location.href = "work_mine.html";
+				});
+				</script>
+		    </main>
+		  </div>
+		</div>
+	</body>
+</html>
